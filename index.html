@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E se Você Fosse | Canal YouTube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-secondary: #12121a;
+            --fg: #f5f0e8;
+            --muted: #8a8578;
+            --accent: #c9a227;
+            --accent-glow: #d4a574;
+            --card: #1a1a24;
+            --border: #2a2a36;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+        }
+
+        .font-display {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Background atmosphere */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 162, 39, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201, 162, 39, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-particle 8s infinite;
+            box-shadow: 0 0 6px var(--accent-glow);
+        }
+
+        @keyframes float-particle {
+            0%, 100% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 0.8; transform: translateY(80vh) scale(1); }
+            90% { opacity: 0.3; transform: translateY(-10vh) scale(0.5); }
+        }
+
+        /* Timeline decoration */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* Video cards */
+        .video-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(201, 162, 39, 0.1);
+            border-color: var(--accent);
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.9) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .video-card img {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .video-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 64px;
+            height: 64px;
+            background: rgba(201, 162, 39, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .video-card:hover .play-button {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Story cards */
+        .story-card {
+            position: relative;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--card) 0%, rgba(26, 26, 36, 0.6) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .story-card:hover::before {
+            opacity: 1;
+        }
+
+        .story-card:hover {
+            border-color: rgba(201, 162, 39, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* CTA Button */
+        .cta-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--accent) 0%, #b8911f 100%);
+            color: var(--bg);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #e0b82e 0%, var(--accent) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cta-button:hover::before {
+            opacity: 1;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(201, 162, 39, 0.4);
+        }
+
+        .cta-button span, .cta-button svg {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section divider */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 4rem 0;
+        }
+
+        /* Glowing text */
+        .glow-text {
+            text-shadow: 0 0 40px rgba(201, 162, 39, 0.5);
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(42, 42, 54, 0.5);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        nav.visible {
+            transform: translateY(0);
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .particle { animation: none; opacity: 0.3; }
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .video-card, .story-card, .cta-button { transition: none; }
+        }
+
+        /* Focus states */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" role="navigation" aria-label="Navegação principal">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="#" class="font-display text-xl font-bold tracking-wider" style="color: var(--accent);">
+                E se Você Fosse
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="#videos" class="text-sm tracking-wide hover:text-[var(--accent)] transition-colors">Vídeos</a>
+                <a href="#historias" class="text-sm tracking-wide hover:text-[var(--accent)] transition-colors">Histórias</a>
+                <a href="https://www.youtube.com/@CanalEseVoceFosse" target="_blank" rel="noopener noreferrer" class="cta-button !py-2 !px-4 !text-xs">
+                    Inscreva-se
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Particles -->
+    <div id="particles" aria-hidden="true"></div>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="hero-bg"></div>
+        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+            <div class="reveal">
+                <p class="font-display text-sm md:text-base tracking-[0.3em] uppercase mb-6" style="color: var(--accent);">
+                    Uma jornada através do tempo
+                </p>
+            </div>
+            <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 reveal reveal-delay-1 glow-text" style="line-height: 1.1;">
+                E se Você<br>
+                <span style="color: var(--accent);">Fosse</span>
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10 reveal reveal-delay-2" style="color: var(--muted);">
+                Viaje através da história e experiencie a vida das maiores personalidades que moldaram o mundo. Cada história contada como se você fosse o protagonista.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
+                <a href="https://www.youtube.com/@CanalEseVoceFosse" target="_blank" rel="noopener noreferrer" class="cta-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.615 3.184c-3.604-.301-12.604-.301-16.208 0-3.897.326-4.353 2.58-4.385 8.816.032 6.237.483 8.49 4.385 8.816 3.604.301 12.604.301 16.208 0 3.897-.326 4.353-2.58 4.385-8.816-.032-6.237-.483-8.49-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                    </svg>
+                    <span>Visitar Canal</span>
+                </a>
+                <a href="#videos" class="px-8 py-4 border border-[var(--border)] rounded-lg font-display tracking-wider hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
+                    Ver Vídeos
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 reveal reveal-delay-4">
+            <div class="w-6 h-10 border-2 rounded-full flex justify-center pt-2" style="border-color: var(--muted);">
+                <div class="w-1 h-2 rounded-full animate-bounce" style="background: var(--accent);"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="relative py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <p class="font-display text-sm tracking-[0.2em] uppercase mb-4" style="color: var(--accent);">O Conceito</p>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
+                        Viva a História<br>em Primeira Mão
+                    </h2>
+                    <p class="text-lg leading-relaxed mb-6" style="color: var(--muted);">
+                        Imagine acordar e ser Napoleão antes de uma batalha decisiva. Ou ser Leonardo da Vinci diante de uma tela em branco. No "E se Você Fosse", cada vídeo é uma imersão total na vida de figuras históricas extraordinárias.
+                    </p>
+                    <p class="text-lg leading-relaxed" style="color: var(--muted);">
+                        Narrativas em segunda pessoa que colocam você no centro dos eventos que mudaram o curso da humanidade. Sinta o peso das decisões, a glória das conquistas e a tragédia das quedas.
+                    </p>
+                </div>
+                <div class="relative reveal reveal-delay-2">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[var(--accent)] to-transparent opacity-10 rounded-2xl blur-3xl"></div>
+                    <div class="relative p-8 rounded-2xl" style="background: var(--card); border: 1px solid var(--border);">
+                        <div class="grid grid-cols-2 gap-6 text-center">
+                            <div>
+                                <p class="font-display text-4xl font-bold" style="color: var(--accent);">50+</p>
+                                <p class="text-sm mt-2" style="color: var(--muted);">Histórias Contadas</p>
+                            </div>
+                            <div>
+                                <p class="font-display text-4xl font-bold" style="color: var(--accent);">1.5k+</p>
+                                <p class="text-sm mt-2" style="color: var(--muted);">Inscritos</p>
+                            </div>
+                            <div>
+                                <p class="font-display text-4xl font-bold" style="color: var(--accent);">500k+</p>
+                                <p class="text-sm mt-2" style="color: var(--muted);">Visualizações</p>
+                            </div>
+                            <div>
+                                <p class="font-display text-4xl font-bold" style="color: var(--accent);">∞</p>
+                                <p class="text-sm mt-2" style="color: var(--muted);">Jornadas no Tempo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-6xl mx-auto"></div>
+
+    <!-- Videos Section -->
+    <section id="videos" class="relative py-24 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <p class="font-display text-sm tracking-[0.2em] uppercase mb-4" style="color: var(--accent);">Galeria</p>
+                <h2 class="font-display text-3xl md:text-5xl font-bold">
+                    Jornadas Históricas
+                </h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="videos-grid">
+                <!-- Videos will be injected here -->
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider max-w-6xl mx-auto"></div>
+
+    <!-- Stories Section -->
+    <section id="historias" class="relative py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <p class="font-display text-sm tracking-[0.2em] uppercase mb-4" style="color: var(--accent);">Breves Histórias</p>
+                <h2 class="font-display text-3xl md:text-5xl font-bold">
+                    Momentos que Definiram o Mundo
+                </h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="stories-grid">
+                <!-- Stories will be injected here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-24 px-6 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[rgba(201,162,39,0.05)] to-transparent"></div>
+        <div class="relative max-w-3xl mx-auto text-center reveal">
+            <h2 class="font-display text-3xl md:text-5xl font-bold mb-6">
+                Pronto para Viajar no Tempo?
+            </h2>
+            <p class="text-lg mb-10" style="color: var(--muted);">
+                Inscreva-se no canal e faça parte dessa jornada épica através da história humana. Novas histórias toda semana.
+            </p>
+            <a href="https://www.youtube.com/@CanalEseVoceFosse?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="cta-button text-lg">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.615 3.184c-3.604-.301-12.604-.301-16.208 0-3.897.326-4.353 2.58-4.385 8.816.032 6.237.483 8.49 4.385 8.816 3.604.301 12.604.301 16.208 0 3.897-.326 4.353-2.58 4.385-8.816-.032-6.237-.483-8.49-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+                <span>Inscreva-se Agora</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t" style="border-color: var(--border);">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="font-display text-xl font-bold" style="color: var(--accent);">
+                E se Você Fosse
+            </div>
+            <p class="text-sm" style="color: var(--muted);">
+                Uma jornada através dos séculos, uma história de cada vez.
+            </p>
+            <a href="https://www.youtube.com/@CanalEseVoceFosse" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--accent)] transition-colors" aria-label="YouTube">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.615 3.184c-3.604-.301-12.604-.301-16.208 0-3.897.326-4.353 2.58-4.385 8.816.032 6.237.483 8.49 4.385 8.816 3.604.301 12.604.301 16.208 0 3.897-.326 4.353-2.58 4.385-8.816-.032-6.237-.483-8.49-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Data - Vídeos reais do canal
+        const videos = [
+            { id: 'xdrXEcrLmMo', title: 'E Se Você Fosse Adolf Hitler?: Queimado Com Combustível de Aviação' },
+            { id: 'LZ-4Rj6i4hA', title: 'E Se Você Fosse Bruce Lee?: Você Trabalhou Até Pesar Apenas 54kg' },
+            { id: 'no8BvC0sepM', title: 'Sua Vida Se Você Fosse Noé: Morreu Completamente Sozinho aos 950' },
+            { id: 'FbD4JoxwXMw', title: 'Sua Vida Se Você Fosse Platão: Morreu aos 80 Sabendo Que Ninguém Queria a Verdade' },
+            { id: 'XOws3yTBEqg', title: 'Sua Vida Se Você Fosse Madre Teresa: Tratada em Hospitais de Luxo' },
+            { id: 'FdKhtdZ8YQM', title: 'Sua Vida Se Você Fosse Judas Iscariotes: Enforcado Até as Entranhas Caírem' },
+            { id: 'NgNkZ2Qk5V8', title: 'E Se Você Fosse Lampião?: Decapitado Após 20 Anos de Terror no Sertão' },
+            { id: '_sMYjFpk-ww', title: 'Sua Vida Se Você Fosse Silvio Santos: Arriscou Bilhões Por Honra' },
+            { id: '7yBlg5dmdeY', title: 'E Se Você Fosse Roberto Bolaños?: Fez Bilhões Enquanto Amigos Faliam' },
+            { id: 'NI76QVGDyDs', title: 'Sua Vida Se Você Fosse Ayrton Senna: Impacto a 218 KM/H' },
+            { id: 'kXlHrL-vx5s', title: '5 Invenções PROIBIDAS que Mudariam Sua Vida' },
+            { id: 'gxmbotOQVgw', title: 'Obsolescência Programada: O Segredo PERIGOSO que te mantém POBRE' }
+        ];
+
+        const stories = [
+            {
+                icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+                title: 'O Império de Alexandre',
+                excerpt: 'Aos 32 anos, você conquistou o mundo conhecido. Do Mediterrâneo ao Indo, seu império se estendia por três continentes. Mas e agora? Para onde vai a glória de quem já tocou os confins da Terra?',
+                year: '323 a.C.'
+            },
+            {
+                icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                title: 'O Último Suspiro de César',
+                excerpt: 'Você atravessa o Rubicão. "A sorte está lançada", sussurra. Os conspiradores se aproximam no Senado. Bruto, seu amigo, levanta a lâmina. Et tu, Brute?',
+                year: '44 a.C.'
+            },
+            {
+                icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
+                title: 'A Última Ceja de Da Vinci',
+                excerpt: 'A Monalisa sorri diante de você. Quatro anos de trabalho naquela testa, naquele sorriso enigmático. Você pincela uma sombra aqui, uma luz ali. A perfeição existe?',
+                year: '1503'
+            },
+            {
+                icon: 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                title: 'O Sonho de Newton',
+                excerpt: 'A maçã cai. Você observa. Por que sempre perpendicular ao chão? A lua também cai, percebe você, mas nunca atinge o solo. A gravidade explicada em uma única ideia.',
+                year: '1666'
+            },
+            {
+                icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z',
+                title: 'A Poção de Cleópatra',
+                excerpt: 'Roma à sua porta. Otaviano avança. Você, a última faraó, escolhe seu final. O áspide desliza sobre seu braço. A lenda nasce da morte escolhida com dignidade.',
+                year: '30 a.C.'
+            },
+            {
+                icon: 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
+                title: 'A Conquista de Genghis',
+                excerpt: 'Das estepes da Mongólia, você unifica as tribos. O maior império territorial da história se forma sob seus cavalos. O mundo treme ao som de seus arqueiros.',
+                year: '1206'
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            renderVideos();
+            renderStories();
+            initScrollReveal();
+            initNavbar();
+        });
+
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Render videos
+        function renderVideos() {
+            const grid = document.getElementById('videos-grid');
+
+            videos.forEach((video, index) => {
+                const card = document.createElement('a');
+                card.href = `https://www.youtube.com/watch?v=${video.id}`;
+                card.target = '_blank';
+                card.rel = 'noopener noreferrer';
+                card.className = 'video-card reveal';
+                card.style.transitionDelay = `${index * 0.05}s`;
+
+                card.innerHTML = `
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}" class="w-full aspect-video object-cover" loading="lazy" />
+                    <div class="play-button" aria-label="Reproduzir vídeo">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#0a0a0f">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+                        <h3 class="font-display text-sm md:text-base font-semibold leading-tight">${video.title}</h3>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Render stories
+        function renderStories() {
+            const grid = document.getElementById('stories-grid');
+
+            stories.forEach((story, index) => {
+                const card = document.createElement('div');
+                card.className = 'story-card reveal';
+                card.style.transitionDelay = `${index * 0.1}s`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), #8a6d14);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="${story.icon}"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-display text-lg font-bold">${story.title}</h3>
+                            <p class="text-xs tracking-wider" style="color: var(--accent);">${story.year}</p>
+                        </div>
+                    </div>
+                    <p class="leading-relaxed" style="color: var(--muted);">${story.excerpt}</p>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Scroll reveal
+        function initScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // Navbar visibility
+        function initNavbar() {
+            const navbar = document.getElementById('navbar');
+            let lastScroll = 0;
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+
+                if (currentScroll > 100) {
+                    navbar.classList.add('visible');
+                } else {
+                    navbar.classList.remove('visible');
+                }
+
+                lastScroll = currentScroll;
+            });
+        }
+    </script>
+</body>
+</html>
