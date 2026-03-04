@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://esevocefosse.github.io/sitemap.xml
