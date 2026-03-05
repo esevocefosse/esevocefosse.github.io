@@ -654,6 +654,7 @@
             </div>
             <div class="flex items-center justify-between gap-3 mb-5">
                 <button id="videos-prev" class="pbtn" type="button">← Anterior</button>
+                <span id="videos-page" class="text-sm" style="color: var(--muted);"></span>
                 <button id="videos-next" class="pbtn" type="button">Próximo →</button>
             </div>
             <div class="videos-carousel" id="videos-grid" aria-label="Carrossel de vídeos">
@@ -770,6 +771,9 @@
             }
         ];
 
+        const videosPerPage = 12;
+        let videosPage = 1;
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
@@ -778,13 +782,19 @@
             initScrollReveal();
             initNavbar();
 
-            const grid = document.getElementById('videos-grid');
             document.getElementById('videos-prev').addEventListener('click', () => {
-                grid.scrollBy({ left: -Math.max(320, grid.clientWidth * 0.9), behavior: 'smooth' });
+                if (videosPage > 1) {
+                    videosPage--;
+                    renderVideos();
+                }
             });
 
             document.getElementById('videos-next').addEventListener('click', () => {
-                grid.scrollBy({ left: Math.max(320, grid.clientWidth * 0.9), behavior: 'smooth' });
+                const totalPages = Math.max(1, Math.ceil(videos.length / videosPerPage));
+                if (videosPage < totalPages) {
+                    videosPage++;
+                    renderVideos();
+                }
             });
         });
 
@@ -803,14 +813,24 @@
             }
         }
 
-        // Render videos (mais novo primeiro + carrossel lateral)
+        // Render videos (mais novo primeiro + paginação de 12)
         function renderVideos() {
             const grid = document.getElementById('videos-grid');
+            const pageInfo = document.getElementById('videos-page');
+            const prevBtn = document.getElementById('videos-prev');
+            const nextBtn = document.getElementById('videos-next');
             const orderedVideos = [...videos].reverse();
 
+            const totalPages = Math.max(1, Math.ceil(orderedVideos.length / videosPerPage));
+            if (videosPage > totalPages) videosPage = totalPages;
+
+            const start = (videosPage - 1) * videosPerPage;
+            const chunk = orderedVideos.slice(start, start + videosPerPage);
+
+            grid.scrollTo({ left: 0, behavior: 'auto' });
             grid.innerHTML = '';
 
-            orderedVideos.forEach((video, index) => {
+            chunk.forEach((video, index) => {
                 const card = document.createElement('a');
                 card.href = `https://www.youtube.com/watch?v=${video.id}`;
                 card.target = '_blank';
@@ -833,7 +853,9 @@
                 grid.appendChild(card);
             });
 
-
+            pageInfo.textContent = `${videosPage}/${totalPages}`;
+            prevBtn.disabled = videosPage === 1;
+            nextBtn.disabled = videosPage === totalPages;
         }
 
         // Render stories
