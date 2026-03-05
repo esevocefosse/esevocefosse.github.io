@@ -480,6 +480,20 @@
             outline-offset: 4px;
         }
 
+        .pbtn {
+            background:#1f1f2b;
+            border:1px solid var(--border);
+            color:#fff;
+            padding:8px 12px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        .pbtn:disabled {
+            opacity:.4;
+            cursor:not-allowed;
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
@@ -602,6 +616,11 @@
                     Jornadas Históricas
                 </h2>
             </div>
+            <div class="flex items-center justify-between gap-3 mb-5">
+                <button id="videos-prev" class="pbtn" type="button">← Anterior</button>
+                <span id="videos-page" class="text-sm" style="color: var(--muted);"></span>
+                <button id="videos-next" class="pbtn" type="button">Próximo →</button>
+            </div>
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="videos-grid">
                 <!-- Videos will be injected here -->
             </div>
@@ -716,6 +735,9 @@
             }
         ];
 
+        const videosPerPage = 12;
+        let videosPage = 1;
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
@@ -723,6 +745,21 @@
             renderStories();
             initScrollReveal();
             initNavbar();
+
+            document.getElementById('videos-prev').addEventListener('click', () => {
+                if (videosPage > 1) {
+                    videosPage--;
+                    renderVideos();
+                }
+            });
+
+            document.getElementById('videos-next').addEventListener('click', () => {
+                const totalPages = Math.max(1, Math.ceil(videos.length / videosPerPage));
+                if (videosPage < totalPages) {
+                    videosPage++;
+                    renderVideos();
+                }
+            });
         });
 
         // Create particles
@@ -740,16 +777,28 @@
             }
         }
 
-        // Render videos
+        // Render videos (último vídeo primeiro + carrossel)
         function renderVideos() {
             const grid = document.getElementById('videos-grid');
+            const prevBtn = document.getElementById('videos-prev');
+            const nextBtn = document.getElementById('videos-next');
+            const pageInfo = document.getElementById('videos-page');
 
-            videos.forEach((video, index) => {
+            const orderedVideos = [...videos].reverse();
+            const totalPages = Math.max(1, Math.ceil(orderedVideos.length / videosPerPage));
+            if (videosPage > totalPages) videosPage = totalPages;
+
+            const start = (videosPage - 1) * videosPerPage;
+            const chunk = orderedVideos.slice(start, start + videosPerPage);
+
+            grid.innerHTML = '';
+
+            chunk.forEach((video, index) => {
                 const card = document.createElement('a');
                 card.href = `https://www.youtube.com/watch?v=${video.id}`;
                 card.target = '_blank';
                 card.rel = 'noopener noreferrer';
-                card.className = 'video-card reveal';
+                card.className = 'video-card reveal active';
                 card.style.transitionDelay = `${index * 0.05}s`;
 
                 card.innerHTML = `
@@ -766,6 +815,10 @@
 
                 grid.appendChild(card);
             });
+
+            pageInfo.textContent = `Página ${videosPage} de ${totalPages}`;
+            prevBtn.disabled = videosPage === 1;
+            nextBtn.disabled = videosPage === totalPages;
         }
 
         // Render stories
