@@ -494,6 +494,31 @@
             cursor:not-allowed;
         }
 
+        .videos-carousel {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding-bottom: .5rem;
+        }
+
+        .videos-carousel .video-card {
+            flex: 0 0 calc(25% - 0.75rem);
+            min-width: 260px;
+        }
+
+        @media (max-width: 1200px) {
+            .videos-carousel .video-card { flex-basis: calc(33.333% - 0.75rem); }
+        }
+
+        @media (max-width: 900px) {
+            .videos-carousel .video-card { flex-basis: calc(50% - 0.75rem); }
+        }
+
+        @media (max-width: 640px) {
+            .videos-carousel .video-card { flex-basis: calc(100% - 0.75rem); }
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
@@ -621,7 +646,7 @@
                 <span id="videos-page" class="text-sm" style="color: var(--muted);"></span>
                 <button id="videos-next" class="pbtn" type="button">Próximo →</button>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="videos-grid">
+            <div class="videos-carousel" id="videos-grid" aria-label="Carrossel de vídeos">
                 <!-- Videos will be injected here -->
             </div>
         </div>
@@ -735,9 +760,6 @@
             }
         ];
 
-        const videosPerPage = 12;
-        let videosPage = 1;
-
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             createParticles();
@@ -746,19 +768,13 @@
             initScrollReveal();
             initNavbar();
 
+            const grid = document.getElementById('videos-grid');
             document.getElementById('videos-prev').addEventListener('click', () => {
-                if (videosPage > 1) {
-                    videosPage--;
-                    renderVideos();
-                }
+                grid.scrollBy({ left: -Math.max(320, grid.clientWidth * 0.9), behavior: 'smooth' });
             });
 
             document.getElementById('videos-next').addEventListener('click', () => {
-                const totalPages = Math.max(1, Math.ceil(videos.length / videosPerPage));
-                if (videosPage < totalPages) {
-                    videosPage++;
-                    renderVideos();
-                }
+                grid.scrollBy({ left: Math.max(320, grid.clientWidth * 0.9), behavior: 'smooth' });
             });
         });
 
@@ -777,23 +793,15 @@
             }
         }
 
-        // Render videos (último vídeo primeiro + carrossel)
+        // Render videos (mais novo primeiro + carrossel lateral)
         function renderVideos() {
             const grid = document.getElementById('videos-grid');
-            const prevBtn = document.getElementById('videos-prev');
-            const nextBtn = document.getElementById('videos-next');
             const pageInfo = document.getElementById('videos-page');
-
             const orderedVideos = [...videos].reverse();
-            const totalPages = Math.max(1, Math.ceil(orderedVideos.length / videosPerPage));
-            if (videosPage > totalPages) videosPage = totalPages;
-
-            const start = (videosPage - 1) * videosPerPage;
-            const chunk = orderedVideos.slice(start, start + videosPerPage);
 
             grid.innerHTML = '';
 
-            chunk.forEach((video, index) => {
+            orderedVideos.forEach((video, index) => {
                 const card = document.createElement('a');
                 card.href = `https://www.youtube.com/watch?v=${video.id}`;
                 card.target = '_blank';
@@ -816,9 +824,7 @@
                 grid.appendChild(card);
             });
 
-            pageInfo.textContent = `Página ${videosPage} de ${totalPages}`;
-            prevBtn.disabled = videosPage === 1;
-            nextBtn.disabled = videosPage === totalPages;
+            pageInfo.textContent = `${orderedVideos.length} vídeos • mais novos primeiro`;
         }
 
         // Render stories
