@@ -654,7 +654,6 @@
             </div>
             <div class="flex items-center justify-between gap-3 mb-5">
                 <button id="videos-prev" class="pbtn" type="button">← Anterior</button>
-                <span id="videos-page" class="text-sm" style="color: var(--muted);"></span>
                 <button id="videos-next" class="pbtn" type="button">Próximo →</button>
             </div>
             <div class="videos-carousel" id="videos-grid" aria-label="Carrossel de vídeos">
@@ -807,7 +806,6 @@
         // Render videos (mais novo primeiro + carrossel lateral)
         function renderVideos() {
             const grid = document.getElementById('videos-grid');
-            const pageInfo = document.getElementById('videos-page');
             const orderedVideos = [...videos].reverse();
 
             grid.innerHTML = '';
@@ -835,7 +833,7 @@
                 grid.appendChild(card);
             });
 
-            pageInfo.textContent = `${orderedVideos.length} vídeos • mais novos primeiro`;
+
         }
 
         // Render stories
