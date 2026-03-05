@@ -499,12 +499,16 @@
             gap: 1rem;
             overflow-x: auto;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            touch-action: pan-x;
             padding-bottom: .5rem;
         }
 
         .videos-carousel .video-card {
             flex: 0 0 calc(25% - 0.75rem);
             min-width: 260px;
+            scroll-snap-align: start;
         }
 
         @media (max-width: 1200px) {
@@ -517,6 +521,10 @@
 
         @media (max-width: 640px) {
             .videos-carousel .video-card { flex-basis: calc(100% - 0.75rem); }
+        }
+
+        .videos-carousel::-webkit-scrollbar {
+            height: 8px;
         }
 
         /* Scrollbar */
