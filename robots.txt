@@ -2,4 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://esevocefosse.github.io/sitemap.xml
-Sitemap: https://esevocefosse.github.io/sitemap-index.xml
